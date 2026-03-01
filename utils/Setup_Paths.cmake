@@ -1,3 +1,4 @@
+include (${CMAKE_CURRENT_LIST_DIR}/../utils/siphon_user_env.cmake)
 set(local_bin "./bin")
 set(local_lib "./lib")
 siphon_user_env(local_bin)

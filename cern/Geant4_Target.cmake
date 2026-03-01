@@ -1,4 +1,4 @@
-include (cmake/siphon_user_env.cmake)
+include (${CMAKE_CURRENT_LIST_DIR}/../utils/siphon_user_env.cmake)
 siphon_user_env(GEANT4_PATH)
 
 if(NOT GEANT4_PATH)
