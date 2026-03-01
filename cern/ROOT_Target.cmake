@@ -1,3 +1,7 @@
+if(TARGET ROOT_Target)
+    return()
+endif()
+
 include (${CMAKE_CURRENT_LIST_DIR}/../utils/siphon_user_env.cmake)
 siphon_user_env(ROOTSYS)
 if("$ENV{ROOTSYS}" STREQUAL "")
