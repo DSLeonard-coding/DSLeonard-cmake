@@ -19,3 +19,20 @@ macro(siphon_user_env)
         message(STATUS "Please copy ${SETUP_FILE} to your home directory and edit the paths in it")
     endif()
 endmacro()
+
+macro(siphon_user_envs REQUIRED_LIST IS_REQUIRED)
+    foreach(VAR ${${REQUIRED_LIST}})
+        # 1. Attempt to pull from the setup script via your existing siphoner
+        siphon_user_env(${VAR})
+
+        # 2. Check if it's still empty (both in CMake and actual ENV)
+        if(NOT ${VAR} AND NOT ENV{${VAR}})
+            if("${IS_REQUIRED}" STREQUAL "REQUIRED")
+                message(FATAL_ERROR
+                        "\n[Siphon FATAL]: Environment variable '${VAR}' is not set!\n"
+                        "This is required for the Geant4 runtime. Check your setup script.\n"
+                )
+            endif()
+        endif()
+    endforeach()
+endmacro()
