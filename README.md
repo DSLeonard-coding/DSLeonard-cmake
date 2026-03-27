@@ -1,4 +1,9 @@
 
+Cmake build scripts to simplify Geant, ROOT and general environment-variable based builds.
+It uses standard environment variables to find needed things but the magic is that
+you do not need to source the setup script.  This can be a pain in some IDE enviroments.  
+This will source the script for you and extract the variables, and create targets for Geant4 and ROOT.
+
 copy, subtree, or submodule this director into: 
 
 cmake/DSL
