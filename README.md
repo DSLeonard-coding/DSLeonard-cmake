@@ -1,7 +1,8 @@
 
 Cmake build scripts to simplify Geant, ROOT and general environment-variable based builds.
-It uses standard environment variables to find needed things but the magic is that
-you do not need to source the setup script.  This can be a pain in some IDE enviroments.  
+
+It uses standard environment variables to find needed things but the magic is that you do not need to source the setup script before running CMake (or your IDE).  This can be a pain in some IDE enviroments. 
+
 This will source the script for you and extract the variables, and create targets for Geant4 and ROOT.
 
 copy, subtree, or submodule this director into: 
@@ -41,11 +42,11 @@ set(SETUP_SCRIPT "$ENV{HOME}/${SETUP_FILE}")
 set(DSL_CMAKE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/DSL/")
 include("${DSL_CMAKE_PATH}/cern/Geant4_Target.cmake")
 include("${DSL_CMAKE_PATH}/cern/ROOT_Target.cmake")
-include("${DSL_CMAKE_PATH}/utils/Setup_Paths.cmake")
+#Optional:
+#include("${DSL_CMAKE_PATH}/utils/Setup_Paths.cmake")
 ```
 
-Change the vb_user_setup.sh to the name of your setup script in your HOME directory (no ~/ or abosolute path, it MUST be in the home directory)
-That script should define:
+Change the vb_user_setup.sh to the name of your setup script in your HOME directory.  That script should define:
 ```
         GEANT4_PATH
         G4ENSDFSTATEDATA
@@ -55,10 +56,12 @@ That script should define:
 ```
 and
 ```
-	ROOTSYS
+	    ROOTSYS
 ```
-env variables.  GEANT4_PATH is the path to the ROOT of the GEANT4 isntall, not the CMAKE path.
-That could look something like this:
+and if you use Setup_Paths.cmake then also ```local_bin``` and ```local_lib```
+which can be used to define isntall paths.
+
+GEANT4_PATH is the path to the root of the GEANT4 isntallation, not the CMAKE path.  That script could look something like this:
 ```
 export Geant4_DIR="/opt/geant-10.7.4-C++17/geant4-install-4.10.7.4-C17-gcc-13.3.0/"
 export ROOT_PATH="/opt/root/6.30.04-CPP17-install"
@@ -75,7 +78,7 @@ export PATH=${VOLUME_BUILDER_GIT_DIR}/bin:${PATH}
 
 unset MAKEFILES  # Not sure what this does
 ```
-
+... and those are the versions of root and geant this is presently tested on.  In fact problems with find_package on the old Geant 10 is part of what inspired this.
 
 Most importantly you will be setup with two virtual targets to use in the CMakeLists.txt:
 ```
@@ -83,10 +86,28 @@ ROOT_Target
 Geant4_Target
 ```
 
-which you can use lik this:
+which you can use like this:
 ```
 target_link_libraries(YourProject PUBLIC
     ROOT_Target
     Geant4_Target
 )
 ```
+
+Finally you can also extract more environment variables from your shell script in the same way the geant script does it:
+
+```
+set(REQUIRED_ENVS
+        GEANT4_PATH
+        G4ENSDFSTATEDATA
+        G4LEDATA
+        G4LEVELGAMMADATA
+        G4NEUTRONHPDATA
+)
+
+siphon_user_envs(REQUIRED_ENVS REQUIRED)
+```
+The keyword REQUIRED just makes cmake error if the env is not found.
+The values will be set the the shell ENV and to the CMAKE variable with the same name.
+
+
