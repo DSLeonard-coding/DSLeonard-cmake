@@ -6,6 +6,11 @@
 #
 
 # Set the actual file paths FIRST (Crucial for add_custom_command syntax) ---
+include_guard(GLOBAL)
+dsl_get_repo(MCObjs git@gitlab.com:douglas.s.leonard/MCObjs master)
+dsl_get_repo(CupSim git@gitlab.com:douglas.s.leonard/CupSim master)
+set(MCObjs_path ${MCObjs_SOURCE_DIR})
+set(CupSim_path ${CupSim_SOURCE_DIR})
 set(MCOBJS_SO "${MCObjs_path}/build/libMCObjs.so")
 set(CUPSIM_SO "${CupSim_path}/build/libCupSimL.so")
 
@@ -34,11 +39,13 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -S "${CupSim_path}" -B "${CupSim_path}/build"
         -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         "-DROOT_DIR=${ROOT_DIR_PATH}"
-        -DMCObjs="Exist!"
-        -DMCObjs_INCLUDE_DIR:PATH="${MCObjs_path}"
+        "-DMCObjs=Exist!"
+        "-DMCObjs_INCLUDE_DIR:PATH=${MCObjs_path}"
         "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
         "-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}"
-        -DCMAKE_CXX_FLAGS="-I${MCObjs_path}"
+        "-DCMAKE_CXX_FLAGS=-I${MCObjs_path}"
+        "-DCMAKE_SHARED_LINKER_FLAGS=-L${MCObjs_path}/build -Wl,-rpath,${MCObjs_path}/build"
+        "-DCMAKE_EXE_LINKER_FLAGS=-L${MCObjs_path}/build -Wl,-rpath,${MCObjs_path}/build"
         COMMAND ${CMAKE_COMMAND} --build "${CupSim_path}/build" -j2
         COMMENT "Building CupSim using ROOT at ${ROOT_DIR_PATH}..."
         VERBATIM
